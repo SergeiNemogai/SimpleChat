@@ -1,6 +1,8 @@
 package com.andersenlab.controller;
 
 import com.andersenlab.model.Message;
+import com.andersenlab.util.ServerMessage;
+import com.andersenlab.util.ClientMessage;
 import com.andersenlab.model.User;
 import com.andersenlab.repository.MessageRepository;
 import com.andersenlab.repository.UserRepository;
@@ -9,6 +11,11 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Sergei Nemogai
@@ -25,29 +32,57 @@ public class ChatController {
         this.userRepository = userRepository;
     }
 
+    // works only when logging is needed
     @MessageMapping("/login")
     @SendTo("/topic/chat")
-    public Message addUser(User user) {
+    public ServerMessage joinChat(ClientMessage clientMessage) {
         String text;
-        if(!userRepository.findByUsername(user.getUsername()).isPresent()) {
-            userRepository.save(user);
+        User user;
+        List<Message> messages = new ArrayList<>();
+        String username = clientMessage.getUsername();
+        Optional<User> userOptional = userRepository.findByUsername(username);
+
+        // checking the user existence
+        if(!userOptional.isPresent()) {
+            user = userRepository.save(User.builder().username(username).build());
             text = " joined the chat";
         } else {
+            user = userOptional.get();
             text = " connected the chat";
+
+            // get all messages have been sending after user's first message
+            messages = messageRepository
+                    .findAllBySendAtAfter(messageRepository.findFirstByUserOrderById(user).getSendAt());
         }
+
         Message message = Message.builder()
-                .text(user.getUsername() + text)
+                .text(username + text)
                 .sendAt(new Timestamp(System.currentTimeMillis()))
                 .user(user)
                 .build();
         messageRepository.save(message);
-        return message;
+
+        ServerMessage serverMessages = new ServerMessage();
+        serverMessages.setMessages(messages
+                .stream().map(m -> new ClientMessage(m.getUser().getUsername(), m.getText()))
+                .collect(Collectors.toList())
+        );
+        serverMessages.getMessages().add(new ClientMessage(username, text));
+        return serverMessages;
     }
 
+    // for receiving messages for all subscribers
     @MessageMapping("/chat")
     @SendTo("/topic/chat")
-    public Message sendMessage(Message message) {
-        messageRepository.save(message);
-        return message;
+    public ServerMessage sendMessage(ClientMessage clientMessage) {
+        String username = clientMessage.getUsername();
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        User user = userOptional.orElseGet(() -> userRepository.save(User.builder().username(username).build()));
+        messageRepository.save(Message.builder()
+                .text(clientMessage.getText())
+                .sendAt(new Timestamp(System.currentTimeMillis()))
+                .user(user)
+                .build());
+        return new ServerMessage(clientMessage.getUsername(), Collections.singletonList(clientMessage));
     }
 }

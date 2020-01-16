@@ -2,10 +2,9 @@ package com.andersenlab.model;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.experimental.Tolerate;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,7 +15,6 @@ import java.util.List;
 @Entity(name = "users")
 @Data
 @Builder
-@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,5 +24,8 @@ public class User {
     private String username;
 
     @OneToMany(mappedBy = "user")
-    private List<Message> messages = new ArrayList<>();
+    private List<Message> messages;
+
+    @Tolerate
+    public User() {}
 }
