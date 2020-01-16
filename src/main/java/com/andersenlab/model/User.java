@@ -1,7 +1,6 @@
 package com.andersenlab.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -13,20 +12,15 @@ import java.util.List;
  */
 
 @Entity(name = "users")
+@Data
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Setter
     private Long id;
 
     @Column(name = "username", unique = true, nullable = false)
-    @Getter
-    @Setter
     private String username;
 
     @OneToMany(mappedBy = "user")
-    @Getter
-    @Setter
     private List<Message> messages = new ArrayList<>();
 }

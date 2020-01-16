@@ -1,7 +1,6 @@
 package com.andersenlab.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -12,25 +11,17 @@ import java.sql.Timestamp;
  */
 
 @Entity(name = "messages")
+@Data
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Setter
     private Long id;
-
-    @Getter
-    @Setter
     private String text;
 
     @Column(name = "send_at", nullable = false)
-    @Getter
-    @Setter
     private Timestamp sendAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @Getter
-    @Setter
     private User user;
 }
