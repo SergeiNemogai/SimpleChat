@@ -1,6 +1,8 @@
 package com.andersenlab.model;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -13,6 +15,8 @@ import java.util.List;
 
 @Entity(name = "users")
 @Data
+@Builder
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
