@@ -13,6 +13,6 @@ import java.util.List;
  */
 
 public interface MessageRepository extends CrudRepository<Message, Long> {
-    List<Message> findAllByUser(User user);
-    List<Message> findAllBySendAtBefore(Timestamp currentDateTime);
+    Message findFirstByUserOrderById(User user);
+    List<Message> findAllBySendAtAfter(Timestamp userConnectedTime);
 }
