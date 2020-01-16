@@ -1,7 +1,5 @@
-HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**
 !**/src/test/**
 
 ### STS ###
@@ -32,4 +30,4 @@ build/
 /mvnw
 /mvnw.cmd
 /.mvn/
-/src/main/resources/application.properties
+/src/main/resources/application.
