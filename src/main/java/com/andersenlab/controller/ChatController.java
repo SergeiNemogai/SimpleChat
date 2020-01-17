@@ -1,13 +1,14 @@
 package com.andersenlab.controller;
 
 import com.andersenlab.model.Message;
-import com.andersenlab.util.ServerMessage;
-import com.andersenlab.util.ClientMessage;
 import com.andersenlab.model.User;
 import com.andersenlab.repository.MessageRepository;
 import com.andersenlab.repository.UserRepository;
+import com.andersenlab.util.ClientMessage;
+import com.andersenlab.util.ServerMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -58,8 +59,9 @@ public class ChatController {
             text = " connected the chat";
 
             // get all messages have been sending after user's first message
-            messages = messageRepository
-                    .findAllBySendAtAfter(messageRepository.findFirstByUserOrderById(user).getSendAt());
+            messages = messageRepository.findAll(
+                    (Specification<Message>) (root, criteriaQuery, builder) -> builder.greaterThanOrEqualTo(
+                            root.get("sendAt"), messageRepository.findFirstByUserOrderById(user).getSendAt()));
         }
 
         Message message = Message.builder()
@@ -74,7 +76,8 @@ public class ChatController {
                 .stream().map(m -> new ClientMessage(m.getUser().getUsername(), m.getText()))
                 .collect(Collectors.toList())
         );
-        serverMessages.getMessages().add(new ClientMessage(username, text));
+        // to send status message
+        serverMessages.getMessages().add(new ClientMessage(username, username + text));
         return serverMessages;
     }
 
@@ -84,7 +87,8 @@ public class ChatController {
     public ServerMessage sendMessage(ClientMessage clientMessage) {
         String username = clientMessage.getUsername();
         Optional<User> userOptional = userRepository.findByUsername(username);
-        User user = userOptional.orElseGet(() -> userRepository.save(User.builder().username(username).build()));
+        User user = userOptional.orElseGet(() -> userRepository.save(
+                User.builder().username(username).build()));
         messageRepository.save(Message.builder()
                 .text(clientMessage.getText())
                 .sendAt(new Timestamp(System.currentTimeMillis()))
