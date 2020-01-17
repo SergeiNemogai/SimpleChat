@@ -1,6 +1,5 @@
 package com.andersenlab.util;
 
-import com.andersenlab.model.Message;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

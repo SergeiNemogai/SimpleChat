@@ -6,8 +6,11 @@ import com.andersenlab.util.ClientMessage;
 import com.andersenlab.model.User;
 import com.andersenlab.repository.MessageRepository;
 import com.andersenlab.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
 import java.sql.Timestamp;
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 public class ChatController {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChatController.class);
 
     public ChatController(MessageRepository messageRepository, UserRepository userRepository) {
         this.messageRepository = messageRepository;
@@ -35,11 +39,13 @@ public class ChatController {
     // works only when logging is needed
     @MessageMapping("/login")
     @SendTo("/topic/chat")
-    public ServerMessage joinChat(ClientMessage clientMessage) {
+    public ServerMessage joinChat(ClientMessage clientMessage, SimpMessageHeaderAccessor headerAccessor) {
         String text;
         User user;
         List<Message> messages = new ArrayList<>();
         String username = clientMessage.getUsername();
+        headerAccessor.getSessionAttributes().put("username", username);
+        LOGGER.info("User Connected:" + headerAccessor.getSessionAttributes().get("username").toString());
         Optional<User> userOptional = userRepository.findByUsername(username);
 
         // checking the user existence
