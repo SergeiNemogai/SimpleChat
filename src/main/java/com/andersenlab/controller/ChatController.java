@@ -44,8 +44,9 @@ public class ChatController {
         User user;
         List<Message> messages = new ArrayList<>();
         String username = clientMessage.getUsername();
+        // add user to current session
         headerAccessor.getSessionAttributes().put("username", username);
-        LOGGER.info("User Connected:" + headerAccessor.getSessionAttributes().get("username").toString());
+        LOGGER.info("User Connected:" + username);
         Optional<User> userOptional = userRepository.findByUsername(username);
 
         // checking the user existence
