@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * @author Sergei Nemogai
- * created at 14.01.2020
+ * created on 14.01.2020
  */
 
 public interface MessageRepository extends JpaRepository<Message, Long>, JpaSpecificationExecutor<Message> {

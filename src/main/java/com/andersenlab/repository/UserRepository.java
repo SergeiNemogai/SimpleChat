@@ -8,7 +8,7 @@ import java.util.Optional;
 
 /**
  * @author Sergei Nemogai
- * created at 14.01.2020
+ * created on 14.01.2020
  */
 
 public interface UserRepository extends JpaRepository<User, Long> {

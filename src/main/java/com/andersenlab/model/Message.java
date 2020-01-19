@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sergei Nemogai
- * created at 14.01.2020
+ * created on 14.01.2020
  */
 
 @Entity(name = "messages")

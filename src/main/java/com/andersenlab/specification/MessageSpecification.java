@@ -12,7 +12,7 @@ import javax.persistence.criteria.Root;
 
 /**
  * @author Sergei Nemogai
- * created at 17.01.2020
+ * created on 17.01.2020
  */
 
 // do not use with TimeStamp!!!

@@ -5,7 +5,7 @@ import lombok.Data;
 
 /**
  * @author Sergei Nemogai
- * created at 17.01.2020
+ * created on 17.01.2020
  */
 
 @Data

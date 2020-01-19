@@ -8,7 +8,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 /**
  * @author Sergei Nemogai
- * created at 15.01.2020
+ * created on 15.01.2020
  */
 
 @Configuration
